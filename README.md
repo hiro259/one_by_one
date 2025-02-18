@@ -1,6 +1,7 @@
 # one_by_one
 
 A new Flutter project.
+my first flutter application
 
 ## Getting Started
 
