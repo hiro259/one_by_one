@@ -39,12 +39,35 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('One by one'),
-        leading: IconButton(
+        leading: PopupMenuButton<String>(
           icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Drawer等を開く
+          onSelected: (value) {
+            setState(() {
+              switch (value) {
+                case 'checkAll':
+                  // 全タスクを完了にする処理
+                  taskRepository.markAllAsComplete();
+                  break;
+                case 'uncheckAll':
+                  // 全タスクを未完了にする処理
+                  taskRepository.markAllAsIncomplete();
+                  break;
+              }
+            });
           },
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(
+                  value: 'checkAll',
+                  child: Text('Check All'),
+                ),
+                const PopupMenuItem(
+                  value: 'uncheckAll',
+                  child: Text('Uncheck All'),
+                ),
+              ],
         ),
+
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -317,6 +340,22 @@ class IconPickerSheet extends StatelessWidget {
     Icons.star,
     Icons.alarm,
     Icons.phone,
+    Icons.access_alarm,
+    Icons.accessibility,
+    Icons.account_balance,
+    Icons.adb,
+    Icons.airplanemode_active,
+    Icons.backup,
+    Icons.camera_alt,
+    Icons.chat,
+    Icons.map,
+    Icons.shopping_cart,
+    Icons.lightbulb,
+    Icons.event,
+    Icons.music_note,
+    Icons.book,
+    Icons.note_add,
+    Icons.wifi,
   ];
 
   @override
@@ -331,9 +370,9 @@ class IconPickerSheet extends StatelessWidget {
       child: GridView.builder(
         itemCount: _iconOptions.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
+          crossAxisCount: 6,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
         ),
         itemBuilder: (context, index) {
           final iconData = _iconOptions[index];
@@ -342,6 +381,7 @@ class IconPickerSheet extends StatelessWidget {
               Navigator.of(context).pop(iconData);
             },
             child: CircleAvatar(
+              radius: 10, //add by hiro259
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               child: Icon(
                 iconData,
@@ -396,12 +436,14 @@ class TaskRepository {
   void markAllAsComplete() {
     for (var task in _tasks) {
       task.isCompleted = true;
+      print('marks complete');
     }
   }
 
   void markAllAsIncomplete() {
     for (var task in _tasks) {
       task.isCompleted = false;
+      print('marks iscomplete');
     }
   }
 }
