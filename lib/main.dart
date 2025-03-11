@@ -116,6 +116,9 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
               setState(() {});
             }
           },
+          customBorder: const CircleBorder(),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           child: CircleAvatar(
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             child: Icon(
@@ -212,6 +215,10 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
                       });
                     }
                   },
+                  customBorder: const CircleBorder(),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+
                   child: CircleAvatar(
                     backgroundColor:
                         Theme.of(context).colorScheme.primaryContainer,
