@@ -1,0 +1,11 @@
+{
+  "taskTitle": "タイトル",
+  "description": "詳細",
+  "taskEdit": "編集",
+  "taskNew": "新規",
+  "delete": "削除",
+  "save": "保存",
+  "Languages": "言語設定",
+  "Colors": "色設定"
+}
+

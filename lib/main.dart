@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 void main() {
   runApp(const OneByOneApp());
@@ -18,6 +20,12 @@ class OneByOneApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [const Locale('en', ''), const Locale('ja', '')],
       home: const OneByOneHomePage(),
     );
   }
@@ -73,6 +81,9 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               // 設定画面へ遷移
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
             },
           ),
         ],
@@ -436,14 +447,134 @@ class TaskRepository {
   void markAllAsComplete() {
     for (var task in _tasks) {
       task.isCompleted = true;
-      print('marks complete');
     }
   }
 
   void markAllAsIncomplete() {
     for (var task in _tasks) {
       task.isCompleted = false;
-      print('marks iscomplete');
     }
+  }
+}
+
+// 1. SettingsScreenをStatefulWidgetに変更し、言語・色の選択を管理
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  // 簡易的に英語・日本語のみ
+  String _selectedLanguage = 'English';
+  // 選択した色（MaterialColorやColorなど）
+  Color _selectedColor = Colors.blue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: ListView(
+        children: [
+          // Languages
+          ListTile(
+            title: const Text('Languages'),
+            subtitle: Text(_selectedLanguage),
+            onTap: () {
+              // 言語選択のダイアログを表示
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Choose Language'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        RadioListTile<String>(
+                          title: const Text('English'),
+                          value: 'English',
+                          groupValue: _selectedLanguage,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedLanguage = value ?? 'English';
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        RadioListTile<String>(
+                          title: const Text('Japanese'),
+                          value: 'Japanese',
+                          groupValue: _selectedLanguage,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedLanguage = value ?? 'English';
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
+          // Colors
+          ListTile(
+            title: const Text('Colors'),
+            subtitle: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: _selectedColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            onTap: () {
+              // 色選択のBottom Sheetを表示
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: GridView.count(
+                      crossAxisCount: 4,
+                      children: [
+                        _colorOption(Colors.blue),
+                        _colorOption(Colors.red),
+                        _colorOption(Colors.green),
+                        _colorOption(Colors.orange),
+                        _colorOption(Colors.purple),
+                        _colorOption(Colors.brown),
+                        _colorOption(Colors.teal),
+                        _colorOption(Colors.pink),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // カラー選択用のヘルパーメソッド
+  Widget _colorOption(Color color) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedColor = color;
+        });
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+    );
   }
 }
