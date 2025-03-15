@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-// import 'l10n/app_localizations.dart';
+import 'package:one_by_one/l10n/app_localizations.dart';
 
 void main() {
   runApp(const OneByOneApp());
@@ -9,8 +9,22 @@ void main() {
 // グローバルなタスクリポジトリ（MVP用：In-Memory実装）
 final TaskRepository taskRepository = TaskRepository();
 
-class OneByOneApp extends StatelessWidget {
+class OneByOneApp extends StatefulWidget {
   const OneByOneApp({Key? key}) : super(key: key);
+
+  @override
+  State<OneByOneApp> createState() => _OneByOneAppState();
+}
+
+class _OneByOneAppState extends State<OneByOneApp> {
+  Locale _locale = const Locale('en', '');
+
+  // 言語を変更するためのメソッド
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +34,25 @@ class OneByOneApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      locale: _locale, // 現在のLocaleを指定
       localizationsDelegates: [
+        AppLocalizations.delegate, // これを追加！
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [const Locale('en', ''), const Locale('ja', '')],
-      home: const OneByOneHomePage(),
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: OneByOneHomePage(onLocaleChange: setLocale),
     );
   }
 }
 
 class OneByOneHomePage extends StatefulWidget {
-  const OneByOneHomePage({Key? key}) : super(key: key);
+  final void Function(Locale) onLocaleChange;
+
+  // onLocaleChange を必須パラメータに指定するため、const は削除（実行時に変わる値が渡されるため）
+  const OneByOneHomePage({Key? key, required this.onLocaleChange})
+    : super(key: key);
 
   @override
   State<OneByOneHomePage> createState() => _OneByOneHomePageState();
@@ -44,6 +64,7 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!; // ここで取得する
     return Scaffold(
       appBar: AppBar(
         title: const Text('One by one'),
@@ -218,6 +239,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!; // ここで取得する
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -227,7 +249,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
           children: [
             // タイトル部
             Text(
-              widget.isNewTask ? 'New Task' : 'Task edit',
+              widget.isNewTask ? loc.taskNew : loc.taskedit,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -271,7 +293,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText: 'Title',
+                labelText: loc.tasktitle,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () {
@@ -285,7 +307,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
             TextField(
               controller: _subTitleController,
               decoration: InputDecoration(
-                labelText: 'SubTitle',
+                labelText: loc.description,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () {
@@ -306,7 +328,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
                         context,
                       ).pop(TaskEditResult(isDeleted: true));
                     },
-                    child: const Text('Delete Task'),
+                    child: Text(loc.delete),
                   ),
                 const Spacer(),
                 TextButton(
@@ -327,7 +349,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
                       context,
                     ).pop(TaskEditResult(task: newTask, isDeleted: false));
                   },
-                  child: const Text('Save Task'),
+                  child: Text(loc.save),
                 ),
               ],
             ),
