@@ -9,13 +9,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get tasktitle => 'Title';
+  String get taskTitle => 'Title';
 
   @override
-  String get description => 'description';
+  String get description => 'Description';
 
   @override
-  String get taskedit => 'Task Edit';
+  String get taskEdit => 'Task Edit';
 
   @override
   String get taskNew => 'New Task';

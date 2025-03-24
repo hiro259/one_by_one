@@ -95,23 +95,23 @@ abstract class AppLocalizations {
     Locale('ja')
   ];
 
-  /// No description provided for @tasktitle.
+  /// No description provided for @taskTitle.
   ///
   /// In en, this message translates to:
   /// **'Title'**
-  String get tasktitle;
+  String get taskTitle;
 
   /// No description provided for @description.
   ///
   /// In en, this message translates to:
-  /// **'description'**
+  /// **'Description'**
   String get description;
 
-  /// No description provided for @taskedit.
+  /// No description provided for @taskEdit.
   ///
   /// In en, this message translates to:
   /// **'Task Edit'**
-  String get taskedit;
+  String get taskEdit;
 
   /// No description provided for @taskNew.
   ///

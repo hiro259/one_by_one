@@ -9,13 +9,13 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get tasktitle => 'タイトル';
+  String get taskTitle => 'Title';
 
   @override
   String get description => '詳細';
 
   @override
-  String get taskedit => '編集';
+  String get taskEdit => 'Task Edit';
 
   @override
   String get taskNew => '新規';

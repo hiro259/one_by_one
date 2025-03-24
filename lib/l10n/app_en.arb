@@ -1,11 +1,10 @@
 {
-  "tasktitle": "Title",
-  "description": "description",
-  "taskedit": "Task Edit",
+  "taskTitle": "Title",
+  "description": "Description",
+  "taskEdit": "Task Edit",
   "taskNew": "New Task",
   "delete": "Delete Task",
   "save": "Save Task",
   "languages": "Languages",
   "colors": "Colors"
 }
-

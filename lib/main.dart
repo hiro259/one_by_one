@@ -42,23 +42,27 @@ class _OneByOneAppState extends State<OneByOneApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: OneByOneHomePage(onLocaleChange: setLocale),
+      home: OneByOneHomePage(setLocale: setLocale),
     );
   }
 }
 
 class OneByOneHomePage extends StatefulWidget {
-  final void Function(Locale) onLocaleChange;
+  final void Function(Locale) setLocale;
 
   // onLocaleChange を必須パラメータに指定するため、const は削除（実行時に変わる値が渡されるため）
-  const OneByOneHomePage({Key? key, required this.onLocaleChange})
-    : super(key: key);
+  const OneByOneHomePage({Key? key, required this.setLocale}) : super(key: key);
 
   @override
-  State<OneByOneHomePage> createState() => _OneByOneHomePageState();
+  State<OneByOneHomePage> createState() =>
+      _OneByOneHomePageState(setLocale: setLocale);
 }
 
 class _OneByOneHomePageState extends State<OneByOneHomePage> {
+  final void Function(Locale) setLocale;
+
+  _OneByOneHomePageState({required this.setLocale});
+
   // リポジトリからタスク一覧を参照
   List<Task> get _tasks => taskRepository.getTasks();
 
@@ -102,9 +106,11 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               // 設定画面へ遷移
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SettingsScreen(setLocale: setLocale),
+                ),
+              );
             },
           ),
         ],
@@ -249,7 +255,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
           children: [
             // タイトル部
             Text(
-              widget.isNewTask ? loc.taskNew : loc.taskedit,
+              widget.isNewTask ? loc.taskNew : loc.taskEdit,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -293,7 +299,7 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText: loc.tasktitle,
+                labelText: loc.taskTitle,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () {
@@ -481,13 +487,18 @@ class TaskRepository {
 
 // 1. SettingsScreenをStatefulWidgetに変更し、言語・色の選択を管理
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  final void Function(Locale) setLocale;
+
+  const SettingsScreen({Key? key, required this.setLocale}) : super(key: key);
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  State<SettingsScreen> createState() =>
+      _SettingsScreenState(setLocale: setLocale);
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final void Function(Locale) setLocale;
+  _SettingsScreenState({required this.setLocale});
   // 簡易的に英語・日本語のみ
   String _selectedLanguage = 'English';
   // 選択した色（MaterialColorやColorなど）
@@ -520,6 +531,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onChanged: (value) {
                             setState(() {
                               _selectedLanguage = value ?? 'English';
+                              setLocale(const Locale('en'));
                             });
                             Navigator.of(context).pop();
                           },
@@ -531,6 +543,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onChanged: (value) {
                             setState(() {
                               _selectedLanguage = value ?? 'English';
+
+                              setLocale(const Locale('ja'));
                             });
                             Navigator.of(context).pop();
                           },
