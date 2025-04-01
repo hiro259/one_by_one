@@ -9,13 +9,13 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get taskTitle => 'Title';
+  String get taskTitle => 'タイトル';
 
   @override
   String get description => '詳細';
 
   @override
-  String get taskEdit => 'Task Edit';
+  String get taskEdit => '編集';
 
   @override
   String get taskNew => '新規';
@@ -31,4 +31,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get colors => '色設定';
+
+  @override
+  String get checkAll => '全てチェックする';
+
+  @override
+  String get uncheckAll => '全てチェックを外す';
 }

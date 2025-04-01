@@ -90,14 +90,8 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
           },
           itemBuilder:
               (context) => [
-                const PopupMenuItem(
-                  value: 'checkAll',
-                  child: Text('Check All'),
-                ),
-                const PopupMenuItem(
-                  value: 'uncheckAll',
-                  child: Text('Uncheck All'),
-                ),
+                PopupMenuItem(value: 'checkAll', child: Text(loc.checkAll)),
+                PopupMenuItem(value: 'uncheckAll', child: Text(loc.uncheckAll)),
               ],
         ),
 
@@ -506,13 +500,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!; // ここで取得する
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         children: [
           // Languages
           ListTile(
-            title: const Text('Languages'),
+            title: Text(loc.languages),
             subtitle: Text(_selectedLanguage),
             onTap: () {
               // 言語選択のダイアログを表示
@@ -520,7 +515,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text('Choose Language'),
+                    title: Text(loc.languages),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -559,7 +554,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Colors
           ListTile(
-            title: const Text('Colors'),
+            title: Text(loc.colors),
             subtitle: Container(
               width: 24,
               height: 24,

@@ -142,6 +142,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Colors'**
   String get colors;
+
+  /// No description provided for @checkAll.
+  ///
+  /// In en, this message translates to:
+  /// **'checkAll'**
+  String get checkAll;
+
+  /// No description provided for @uncheckAll.
+  ///
+  /// In en, this message translates to:
+  /// **'uncheckAll'**
+  String get uncheckAll;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

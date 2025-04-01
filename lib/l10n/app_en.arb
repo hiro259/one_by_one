@@ -6,5 +6,7 @@
   "delete": "Delete Task",
   "save": "Save Task",
   "languages": "Languages",
-  "colors": "Colors"
+  "colors": "Colors",
+  "checkAll":"checkAll",
+  "uncheckAll":"uncheckAll"
 }

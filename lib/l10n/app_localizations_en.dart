@@ -31,4 +31,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get colors => 'Colors';
+
+  @override
+  String get checkAll => 'checkAll';
+
+  @override
+  String get uncheckAll => 'uncheckAll';
 }
