@@ -18,11 +18,18 @@ class OneByOneApp extends StatefulWidget {
 
 class _OneByOneAppState extends State<OneByOneApp> {
   Locale _locale = const Locale('en', '');
-
+  // Color _seedColor = Colors.deepPurple;
+  Color _seedColor = Colors.blue;
   // 言語を変更するためのメソッド
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
+    });
+  }
+
+  void setColor(Color seedColor) {
+    setState(() {
+      _seedColor = seedColor;
     });
   }
 
@@ -32,7 +39,7 @@ class _OneByOneAppState extends State<OneByOneApp> {
       title: 'One by one',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: _seedColor),
       ),
       locale: _locale, // 現在のLocaleを指定
       localizationsDelegates: [
@@ -42,26 +49,32 @@ class _OneByOneAppState extends State<OneByOneApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: OneByOneHomePage(setLocale: setLocale),
+      home: OneByOneHomePage(setLocale: setLocale, setColor: setColor),
     );
   }
 }
 
 class OneByOneHomePage extends StatefulWidget {
   final void Function(Locale) setLocale;
+  final void Function(Color) setColor;
 
   // onLocaleChange を必須パラメータに指定するため、const は削除（実行時に変わる値が渡されるため）
-  const OneByOneHomePage({Key? key, required this.setLocale}) : super(key: key);
+  const OneByOneHomePage({
+    Key? key,
+    required this.setLocale,
+    required this.setColor,
+  }) : super(key: key);
 
   @override
   State<OneByOneHomePage> createState() =>
-      _OneByOneHomePageState(setLocale: setLocale);
+      _OneByOneHomePageState(setLocale: setLocale, setColor: setColor);
 }
 
 class _OneByOneHomePageState extends State<OneByOneHomePage> {
   final void Function(Locale) setLocale;
+  final void Function(Color) setColor;
 
-  _OneByOneHomePageState({required this.setLocale});
+  _OneByOneHomePageState({required this.setLocale, required this.setColor});
 
   // リポジトリからタスク一覧を参照
   List<Task> get _tasks => taskRepository.getTasks();
@@ -102,7 +115,11 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
               // 設定画面へ遷移
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => SettingsScreen(setLocale: setLocale),
+                  builder:
+                      (_) => SettingsScreen(
+                        setLocale: setLocale,
+                        setColor: setColor,
+                      ),
                 ),
               );
             },
@@ -482,17 +499,23 @@ class TaskRepository {
 // 1. SettingsScreenをStatefulWidgetに変更し、言語・色の選択を管理
 class SettingsScreen extends StatefulWidget {
   final void Function(Locale) setLocale;
+  final Function(Color) setColor;
 
-  const SettingsScreen({Key? key, required this.setLocale}) : super(key: key);
+  const SettingsScreen({
+    Key? key,
+    required this.setLocale,
+    required this.setColor,
+  }) : super(key: key);
 
   @override
   State<SettingsScreen> createState() =>
-      _SettingsScreenState(setLocale: setLocale);
+      _SettingsScreenState(setLocale: setLocale, setColor: setColor);
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final void Function(Locale) setLocale;
-  _SettingsScreenState({required this.setLocale});
+  final Function(Color) setColor;
+  _SettingsScreenState({required this.setLocale, required this.setColor});
   // 簡易的に英語・日本語のみ
   String _selectedLanguage = 'English';
   // 選択した色（MaterialColorやColorなど）
@@ -577,10 +600,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _colorOption(Colors.red),
                         _colorOption(Colors.green),
                         _colorOption(Colors.orange),
-                        _colorOption(Colors.purple),
+                        _colorOption(Colors.deepPurple),
                         _colorOption(Colors.brown),
                         _colorOption(Colors.teal),
                         _colorOption(Colors.pink),
+                        _colorOption(Colors.black),
+                        _colorOption(Colors.white),
                       ],
                     ),
                   );
@@ -599,7 +624,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onTap: () {
         setState(() {
           _selectedColor = color;
+          setColor(color);
         });
+
         Navigator.of(context).pop();
       },
       child: Container(
