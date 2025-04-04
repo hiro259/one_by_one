@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:one_by_one/l10n/app_localizations.dart';
 
+// 設定用モデル
+class AppSettings extends ChangeNotifier {
+  Locale locale;
+  Color seedColor;
+
+  AppSettings({required this.locale, required this.seedColor});
+
+  void updateLocale(Locale newLocale) {
+    locale = newLocale;
+    notifyListeners();
+  }
+
+  void updateSeedColor(Color newColor) {
+    seedColor = newColor;
+    notifyListeners();
+  }
+}
+
 void main() {
   runApp(const OneByOneApp());
 }
