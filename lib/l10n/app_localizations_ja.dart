@@ -37,4 +37,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get uncheckAll => '全てチェックを外す';
+
+  @override
+  String get brigness => 'ダークモード';
 }

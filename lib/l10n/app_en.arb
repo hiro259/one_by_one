@@ -8,5 +8,6 @@
   "languages": "Languages",
   "colors": "Colors",
   "checkAll":"checkAll",
-  "uncheckAll":"uncheckAll"
+  "uncheckAll":"uncheckAll",
+  "brigness":"dark mode"
 }

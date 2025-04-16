@@ -37,4 +37,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uncheckAll => 'uncheckAll';
+
+  @override
+  String get brigness => 'dark mode';
 }

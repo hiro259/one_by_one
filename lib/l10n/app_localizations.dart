@@ -154,6 +154,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'uncheckAll'**
   String get uncheckAll;
+
+  /// No description provided for @brigness.
+  ///
+  /// In en, this message translates to:
+  /// **'dark mode'**
+  String get brigness;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

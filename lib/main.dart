@@ -7,8 +7,13 @@ import 'package:provider/provider.dart';
 class AppSettings extends ChangeNotifier {
   Locale locale;
   Color seedColor;
+  bool isDark;
 
-  AppSettings({required this.locale, required this.seedColor});
+  AppSettings({
+    required this.locale,
+    required this.seedColor,
+    required this.isDark,
+  });
 
   void updateLocale(Locale newLocale) {
     locale = newLocale;
@@ -19,14 +24,22 @@ class AppSettings extends ChangeNotifier {
     seedColor = newColor;
     notifyListeners();
   }
+
+  void updateBritness(bool value) {
+    isDark = value;
+    notifyListeners();
+  }
 }
 
 void main() {
   runApp(
     ChangeNotifierProvider(
       create:
-          (_) =>
-              AppSettings(locale: const Locale('en'), seedColor: Colors.blue),
+          (_) => AppSettings(
+            locale: const Locale('en'),
+            seedColor: Colors.blue,
+            isDark: false,
+          ),
       child: const OneByOneApp(),
     ),
   );
@@ -50,7 +63,10 @@ class _OneByOneAppState extends State<OneByOneApp> {
       title: 'One by one',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: settings.seedColor),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: settings.seedColor,
+          brightness: settings.isDark ? Brightness.dark : Brightness.light,
+        ),
       ),
       locale: settings.locale, // 現在のLocaleを指定
       localizationsDelegates: [
@@ -556,7 +572,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-
+          //brigness
+          ListTile(
+            title: Text(loc.brigness),
+            trailing: Switch(
+              value: settings.isDark,
+              onChanged: (bool value) {
+                settings.updateBritness(value);
+              },
+            ),
+          ),
           // Colors
           ListTile(
             title: Text(loc.colors),

@@ -8,6 +8,7 @@
   "languages": "言語設定",
   "colors": "色設定",
   "checkAll":"全てチェックする",
-  "uncheckAll":"全てチェックを外す"
+  "uncheckAll":"全てチェックを外す",
+  "brigness":"ダークモード"
 }
 
