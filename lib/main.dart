@@ -43,15 +43,6 @@ class OneByOneApp extends StatefulWidget {
 }
 
 class _OneByOneAppState extends State<OneByOneApp> {
-  Locale _locale = const Locale('en', '');
-  // Color _seedColor = Colors.deepPurple;
-  // 言語を変更するためのメソッド
-  void setLocale(Locale locale) {
-    setState(() {
-      _locale = locale;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<AppSettings>(context);
@@ -61,7 +52,7 @@ class _OneByOneAppState extends State<OneByOneApp> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: settings.seedColor),
       ),
-      locale: _locale, // 現在のLocaleを指定
+      locale: settings.locale, // 現在のLocaleを指定
       localizationsDelegates: [
         AppLocalizations.delegate, // これを追加！
         GlobalMaterialLocalizations.delegate,
@@ -69,27 +60,20 @@ class _OneByOneAppState extends State<OneByOneApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: OneByOneHomePage(setLocale: setLocale),
+      home: OneByOneHomePage(),
     );
   }
 }
 
 class OneByOneHomePage extends StatefulWidget {
-  final void Function(Locale) setLocale;
-
   // onLocaleChange を必須パラメータに指定するため、const は削除（実行時に変わる値が渡されるため）
-  const OneByOneHomePage({Key? key, required this.setLocale}) : super(key: key);
+  const OneByOneHomePage({Key? key}) : super(key: key);
 
   @override
-  State<OneByOneHomePage> createState() =>
-      _OneByOneHomePageState(setLocale: setLocale);
+  State<OneByOneHomePage> createState() => _OneByOneHomePageState();
 }
 
 class _OneByOneHomePageState extends State<OneByOneHomePage> {
-  final void Function(Locale) setLocale;
-
-  _OneByOneHomePageState({required this.setLocale});
-
   // リポジトリからタスク一覧を参照
   List<Task> get _tasks => taskRepository.getTasks();
 
@@ -127,11 +111,9 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               // 設定画面へ遷移
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => SettingsScreen(setLocale: setLocale),
-                ),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => SettingsScreen()));
             },
           ),
         ],
@@ -508,26 +490,22 @@ class TaskRepository {
 
 // 1. SettingsScreenをStatefulWidgetに変更し、言語・色の選択を管理
 class SettingsScreen extends StatefulWidget {
-  final void Function(Locale) setLocale;
-
-  const SettingsScreen({Key? key, required this.setLocale}) : super(key: key);
+  const SettingsScreen({Key? key}) : super(key: key);
 
   @override
-  State<SettingsScreen> createState() =>
-      _SettingsScreenState(setLocale: setLocale);
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final void Function(Locale) setLocale;
-  _SettingsScreenState({required this.setLocale});
   // 簡易的に英語・日本語のみ
   String _selectedLanguage = 'English';
-  // 選択した色（MaterialColorやColorなど）
 
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<AppSettings>(context);
-    final loc = AppLocalizations.of(context)!; // ここで取得する
+
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
@@ -553,7 +531,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onChanged: (value) {
                             setState(() {
                               _selectedLanguage = value ?? 'English';
-                              setLocale(const Locale('en'));
+                              settings.updateLocale(const Locale('en'));
                             });
                             Navigator.of(context).pop();
                           },
@@ -566,7 +544,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             setState(() {
                               _selectedLanguage = value ?? 'English';
 
-                              setLocale(const Locale('ja'));
+                              settings.updateLocale(const Locale('ja'));
                             });
                             Navigator.of(context).pop();
                           },
