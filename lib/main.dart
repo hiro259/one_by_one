@@ -90,8 +90,13 @@ class OneByOneHomePage extends StatefulWidget {
 }
 
 class _OneByOneHomePageState extends State<OneByOneHomePage> {
-  // リポジトリからタスク一覧を参照
-  List<Task> get _tasks => taskRepository.getTasks();
+  late List<Task> _tasks;
+
+  @override
+  void initState() {
+    super.initState();
+    _tasks = List.from(taskRepository.getTasks());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,11 +139,13 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: _tasks.length,
-        itemBuilder: (context, index) {
-          return _buildListItem(_tasks[index]);
-        },
+      body: ReorderableListView(
+        onReorder: _onReorder, // ← このあと定義する関数
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        children: [
+          for (final task in _tasks)
+            Card(key: ValueKey(task.id), child: _buildListItem(task)),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -160,12 +167,21 @@ class _OneByOneHomePageState extends State<OneByOneHomePage> {
             final newTask = result.task!;
             newTask.id = DateTime.now().millisecondsSinceEpoch.toString();
             taskRepository.addTask(newTask);
-            setState(() {});
+            setState(() {
+              _tasks.add(newTask);
+            });
           }
         },
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      taskRepository.reorderTasks(oldIndex, newIndex);
+      _tasks = List.from(taskRepository.getTasks()); // 表示を更新
+    });
   }
 
   Widget _buildListItem(Task task) {
@@ -501,6 +517,12 @@ class TaskRepository {
     for (var task in _tasks) {
       task.isCompleted = false;
     }
+  }
+
+  void reorderTasks(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex -= 1;
+    final moved = _tasks.removeAt(oldIndex);
+    _tasks.insert(newIndex, moved);
   }
 }
 
