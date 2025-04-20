@@ -611,8 +611,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _colorOption(Colors.brown, settings),
                         _colorOption(Colors.teal, settings),
                         _colorOption(Colors.pink, settings),
-                        _colorOption(Colors.black, settings),
-                        _colorOption(Colors.white, settings),
                       ],
                     ),
                   );
