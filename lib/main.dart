@@ -279,6 +279,13 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _subTitleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!; // ここで取得する
     return Padding(
