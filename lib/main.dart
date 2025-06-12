@@ -112,6 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.settings, color: Colors.black),
             onPressed: () {
               // Handle settings button press
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => SettingsScreen()));
             },
           ),
         ],
