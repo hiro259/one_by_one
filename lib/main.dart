@@ -76,11 +76,218 @@ class _OneByOneAppState extends State<OneByOneApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: OneByOneHomePage(),
+      // home: OneByOneHomePage(),
+      home: HomeScreen(),
     );
   }
 }
 
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.black),
+          onPressed: () {
+            // Handle menu button press
+          },
+        ),
+        title: const Text(
+          'One by one',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.black),
+            onPressed: () {
+              // Handle settings button press
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              // children: const [
+              //   Text('Card 01', style: TextStyle(fontWeight: FontWeight.bold)),
+              //   Text('Card 02', style: TextStyle(fontWeight: FontWeight.bold)),
+              //   Text('Card 03', style: TextStyle(fontWeight: FontWeight.bold)),
+              // ],
+            ),
+            const SizedBox(height: 16.0),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, // 3 columns
+                  crossAxisSpacing: 10.0, // Spacing between columns
+                  mainAxisSpacing: 10.0, // Spacing between rows
+                  childAspectRatio: 0.7, // Adjust as needed for card height
+                ),
+                itemCount:
+                    11, // 3 rows * 3 columns + 2 missing cards (for the add button)
+                itemBuilder: (context, index) {
+                  if (index == 10) {
+                    // The last card is the add button
+                    return const AddCardWidget();
+                  }
+                  return CardWidget(
+                    title: 'Title',
+                    updatedText: _getUpdatedText(index),
+                    showCloseButton: true,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getUpdatedText(int index) {
+    // This logic mimics the image's "Updated today", "Updated yesterday", "Updated 2 days ago" pattern
+    final int column = index % 3;
+    if (column == 0) {
+      return 'Updated today';
+    } else if (column == 1) {
+      return 'Updated yesterday';
+    } else {
+      return 'Updated 2 days ago';
+    }
+  }
+}
+
+class CardWidget extends StatelessWidget {
+  final String title;
+  final String updatedText;
+  final bool showCloseButton;
+
+  const CardWidget({
+    super.key,
+    required this.title,
+    required this.updatedText,
+    this.showCloseButton = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      color: Colors.grey[200], // Light grey background for cards
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child:
+                  showCloseButton
+                      ? Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          iconSize: 18,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: () {
+                            // Handle close button
+                          },
+                        ),
+                      )
+                      : const SizedBox.shrink(),
+            ),
+            const SizedBox(
+              height: 8,
+            ), // Spacing between close button and image placeholders
+            // Placeholder for the image/icons as shown in the screenshot
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.category, size: 30, color: Colors.grey[600]),
+                        const SizedBox(width: 10),
+                        Icon(Icons.ac_unit, size: 30, color: Colors.grey[600]),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Icon(Icons.square, size: 30, color: Colors.grey[600]),
+                  ],
+                ),
+              ),
+            ),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            Text(
+              updatedText,
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddCardWidget extends StatelessWidget {
+  const AddCardWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+        side: BorderSide(
+          color: Colors.grey[400]!,
+          width: 1.5,
+        ), // Dotted border effect
+      ),
+      color: Colors.transparent, // Transparent background
+      child: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.blue[100], // Light blue background for the plus icon
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.add, color: Colors.blue, size: 30),
+            onPressed: () {
+              // Handle add button press
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+//タスクのリスト
 class OneByOneHomePage extends StatefulWidget {
   // onLocaleChange を必須パラメータに指定するため、const は削除（実行時に変わる値が渡されるため）
   const OneByOneHomePage({Key? key}) : super(key: key);
@@ -276,13 +483,6 @@ class _TaskEditDialogContentState extends State<TaskEditDialogContent> {
       );
       _selectedIcon = widget.task?.icon ?? Icons.person;
     }
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _subTitleController.dispose();
-    super.dispose();
   }
 
   @override
