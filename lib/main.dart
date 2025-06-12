@@ -90,6 +90,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late List<int> _cardIndices;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardIndices = List<int>.generate(10, (index) => index);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,22 +143,55 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 3 columns
-                  crossAxisSpacing: 10.0, // Spacing between columns
-                  mainAxisSpacing: 10.0, // Spacing between rows
-                  childAspectRatio: 0.7, // Adjust as needed for card height
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                  childAspectRatio: 1,
                 ),
-                itemCount:
-                    11, // 3 rows * 3 columns + 2 missing cards (for the add button)
+                itemCount: _cardIndices.length + 1,
                 itemBuilder: (context, index) {
-                  if (index == 10) {
-                    // The last card is the add button
+                  if (index == _cardIndices.length) {
                     return const AddCardWidget();
                   }
-                  return CardWidget(
-                    title: 'Title',
-                    updatedText: _getUpdatedText(index),
-                    showCloseButton: true,
+
+                  final cardIndex = _cardIndices[index];
+                  return DragTarget<int>(
+                    onWillAccept: (from) => from != cardIndex,
+                    onAccept: (from) {
+                      setState(() {
+                        final fromIdx = _cardIndices.indexOf(from);
+                        final item = _cardIndices.removeAt(fromIdx);
+                        _cardIndices.insert(index, item);
+                      });
+                    },
+                    builder: (context, candidateData, rejectedData) {
+                      return LongPressDraggable<int>(
+                        data: cardIndex,
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: CardWidget(
+                              title: 'Title',
+                              updatedText: _getUpdatedText(cardIndex),
+                              showCloseButton: false,
+                            ),
+                          ),
+                        ),
+                        childWhenDragging: const SizedBox.shrink(),
+                        child: CardWidget(
+                          title: 'Title',
+                          updatedText: _getUpdatedText(cardIndex),
+                          showCloseButton: true,
+                          onClose: () {
+                            setState(() {
+                              _cardIndices.removeAt(index);
+                            });
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -179,12 +219,14 @@ class CardWidget extends StatelessWidget {
   final String title;
   final String updatedText;
   final bool showCloseButton;
+  final VoidCallback? onClose;
 
   const CardWidget({
     super.key,
     required this.title,
     required this.updatedText,
     this.showCloseButton = true,
+    this.onClose,
   });
 
   @override
@@ -212,9 +254,7 @@ class CardWidget extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () {
-                            // Handle close button
-                          },
+                          onPressed: onClose,
                         ),
                       )
                       : const SizedBox.shrink(),
