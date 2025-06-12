@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:one_by_one/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:reorderables/reorderables.dart';
 
 // 設定用モデル
 class AppSettings extends ChangeNotifier {
@@ -90,6 +91,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<int> _items = List.generate(10, (index) => index);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,26 +137,40 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16.0),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 3 columns
-                  crossAxisSpacing: 10.0, // Spacing between columns
-                  mainAxisSpacing: 10.0, // Spacing between rows
-                  childAspectRatio: 0.7, // Adjust as needed for card height
+              child: SingleChildScrollView(
+                child: ReorderableWrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  maxMainAxisCount: 3,
+                  needsLongPressDraggable: false,
+                  onReorder: (oldIndex, newIndex) {
+                    setState(() {
+                      final item = _items.removeAt(oldIndex);
+                      _items.insert(newIndex, item);
+                    });
+                  },
+                  children: [
+                    for (int i = 0; i < _items.length; i++)
+                      AspectRatio(
+                        key: ValueKey(_items[i]),
+                        aspectRatio: 1,
+                        child: CardWidget(
+                          title: 'Title',
+                          updatedText: _getUpdatedText(i),
+                          showCloseButton: true,
+                          onClose: () {
+                            setState(() {
+                              _items.removeAt(i);
+                            });
+                          },
+                        ),
+                      ),
+                    const AspectRatio(
+                      aspectRatio: 1,
+                      child: AddCardWidget(),
+                    ),
+                  ],
                 ),
-                itemCount:
-                    11, // 3 rows * 3 columns + 2 missing cards (for the add button)
-                itemBuilder: (context, index) {
-                  if (index == 10) {
-                    // The last card is the add button
-                    return const AddCardWidget();
-                  }
-                  return CardWidget(
-                    title: 'Title',
-                    updatedText: _getUpdatedText(index),
-                    showCloseButton: true,
-                  );
-                },
               ),
             ),
           ],
@@ -179,12 +196,14 @@ class CardWidget extends StatelessWidget {
   final String title;
   final String updatedText;
   final bool showCloseButton;
+  final VoidCallback? onClose;
 
   const CardWidget({
     super.key,
     required this.title,
     required this.updatedText,
     this.showCloseButton = true,
+    this.onClose,
   });
 
   @override
@@ -212,9 +231,7 @@ class CardWidget extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () {
-                            // Handle close button
-                          },
+                          onPressed: onClose,
                         ),
                       )
                       : const SizedBox.shrink(),
