@@ -136,43 +136,55 @@ class _HomeScreenState extends State<HomeScreen> {
               // ],
             ),
             const SizedBox(height: 16.0),
-            Expanded(
-              child: SingleChildScrollView(
-                child: ReorderableWrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  maxMainAxisCount: 3,
-                  needsLongPressDraggable: false,
-                  onReorder: (oldIndex, newIndex) {
-                    setState(() {
-                      final item = _items.removeAt(oldIndex);
-                      _items.insert(newIndex, item);
-                    });
-                  },
-                  children: [
-                    for (int i = 0; i < _items.length; i++)
-                      AspectRatio(
-                        key: ValueKey(_items[i]),
-                        aspectRatio: 1,
-                        child: CardWidget(
-                          title: 'Title',
-                          updatedText: _getUpdatedText(i),
-                          showCloseButton: true,
-                          onClose: () {
-                            setState(() {
-                              _items.removeAt(i);
-                            });
-                          },
-                        ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    const minTileWidth = 120.0;
+                    int columnCount = (constraints.maxWidth / minTileWidth).floor();
+                    if (columnCount < 3) {
+                      columnCount = 3;
+                    } else {
+                      columnCount -= columnCount % 3;
+                      if (columnCount == 0) columnCount = 3;
+                    }
+                    return SingleChildScrollView(
+                      child: ReorderableWrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        maxMainAxisCount: columnCount,
+                        needsLongPressDraggable: false,
+                        onReorder: (oldIndex, newIndex) {
+                          setState(() {
+                            final item = _items.removeAt(oldIndex);
+                            _items.insert(newIndex, item);
+                          });
+                        },
+                        children: [
+                          for (int i = 0; i < _items.length; i++)
+                            AspectRatio(
+                              key: ValueKey(_items[i]),
+                              aspectRatio: 1,
+                              child: CardWidget(
+                                title: 'Title',
+                                updatedText: _getUpdatedText(i),
+                                showCloseButton: true,
+                                onClose: () {
+                                  setState(() {
+                                    _items.removeAt(i);
+                                  });
+                                },
+                              ),
+                            ),
+                          const AspectRatio(
+                            aspectRatio: 1,
+                            child: AddCardWidget(),
+                          ),
+                        ],
                       ),
-                    const AspectRatio(
-                      aspectRatio: 1,
-                      child: AddCardWidget(),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ),
           ],
         ),
       ),
